@@ -1,5 +1,5 @@
 import React from "react"
-import Button from "../button"
+import Button from "../Button"
 import styled from "styled-components"
 
 const StyledH2 = styled.h2`
@@ -11,6 +11,7 @@ const StyledDiv = styled.div`
 width: 90vw;
 margin: 0 auto;
 padding: 5rem 0;
+text-align: center;
 `
 
 const RestartDialog = ({ handleRestart }) => {
