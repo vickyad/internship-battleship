@@ -7,36 +7,40 @@ const StyledBoard = styled.div`
     width: 90vmin;
 `
 
+const StyledIndex = styled.div`
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    justify-content: center;
+    height: 3rem;
+    align-self: center;
+`
+
 const StyledItem = styled.div`
     align-items: center;
-    background: #121212;
+    background: ${props => props.secondPlayer ? '#232F1B' : '#121212'};
     border-width: 2px;
     border-style: outset;
     color: #94C973;
     display: flex;
     font-weight: bold;
     justify-content: center;
+    height: calc(90vmin / ${props => props.gameBoardColumns});
+    width: calc(90vmin / ${props => props.gameBoardColumns});
 `
 
-const StyledIndex = styled.div`
-    align-items: center;
-    color: #f5f5f5;
-    display: flex;
-    font-weight: bold;
-    justify-content: center;
-`
+const Board = ({ gameBoard, gameBoardColumns, secondPlayer }) => {
 
-const Board = ({ gameBoard, gameBoardColumns }) => {
     return (
         <StyledBoard style={{ gridTemplateColumns: `repeat(${gameBoardColumns + 1}, 1fr)` }}>
             <span></span>
-            {[...Array(gameBoardColumns).keys()].map((item, index) => <StyledIndex style={{ height: `calc(90vmin / ${gameBoardColumns + 1})`, width: `calc(90vmin / ${gameBoardColumns + 1})` }} key={`header-index_${index}`}>{item + 1}</StyledIndex>)}
+            {[...Array(gameBoardColumns).keys()].map((item, index) => <StyledIndex key={`header-index_${index}`}>{item + 1}</StyledIndex>)}
             {gameBoard ?
                 gameBoard.map((array, arrayIndex) => {
                     return (
                         <>
-                            <StyledIndex style={{ height: `calc(90vmin / ${gameBoardColumns + 1})`, width: `calc(90vmin / ${gameBoardColumns + 1})` }} key={`lateral-index_${arrayIndex}`}>{String.fromCharCode(arrayIndex + 65)}</StyledIndex>
-                            {array.map((item, itemIndex) => <StyledItem style={{ height: `calc(90vmin / ${gameBoardColumns + 1})`, width: `calc(90vmin / ${gameBoardColumns + 1})` }} key={`game-table_${arrayIndex}${itemIndex}`}>{item === 'S' ? ' ' : item}</StyledItem>)}
+                            <StyledIndex>{String.fromCharCode(arrayIndex + 65)}</StyledIndex>
+                            {array.map(item => <StyledItem secondPlayer={secondPlayer} gameBoardColumns={gameBoardColumns + 1}>{item === 'S' ? ' ' : item}</StyledItem>)}
                         </>
                     )
                 })

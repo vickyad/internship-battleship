@@ -14,10 +14,16 @@ padding: 5rem 0;
 text-align: center;
 `
 
-const RestartDialog = ({ handleRestart }) => {
+const RestartDialog = ({ handleRestart, twoPlayers, P1Wins }) => {
     return (
         <StyledDiv>
-            <StyledH2>Navios inimigos derrubados com êxito</StyledH2>
+            <StyledH2>
+                {twoPlayers ?
+                    `O jogador ${P1Wins ? '1' : '2'} foi o primeiro a derrubar os navios inimigos`
+                    :
+                    'Navios inimigos derrubados com êxito'
+                }
+            </StyledH2>
             <Button onClick={handleRestart} buttonText="Reiniciar o jogo" />
         </StyledDiv>
     )

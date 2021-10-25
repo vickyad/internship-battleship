@@ -14,14 +14,14 @@ font-size: 1.1rem;
 padding: 0.3rem 0.5rem;
 `
 
-const SyledInput = styled.label`
+const SyledLabel = styled.label`
 margin: 0.3rem 0;
 `
 
 const Input = ({ inputText, value, onChange }) => {
     return (
         <StyledInputWrapper>
-            <SyledInput>{inputText}</SyledInput>
+            <SyledLabel>{inputText}</SyledLabel>
             <StyledInput type="text" value={value} onChange={event => onChange(event)} />
         </StyledInputWrapper>
     )

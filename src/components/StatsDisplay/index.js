@@ -5,6 +5,7 @@ const StyledStatsDisplay = styled.div`
     background: #5D7E48;
     font-weight: 600;
     padding: 0.5rem 0;
+    margin-top: 1.5rem;
 `
 
 const StyledHitNMisses = styled.div`

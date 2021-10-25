@@ -6,7 +6,7 @@ import Input from "./components/Input"
 import RestartDialog from "./components/RestartDialog"
 import StatsDisplay from "./components/StatsDisplay"
 import StartDialog from "./components/StartDialog"
-import { startGame, shoot, gameStats } from './engine/engine'
+import { startGame, shoot } from './engine/engine'
 import './App.css'
 
 const StyledWrapper = styled.div`
@@ -44,27 +44,36 @@ const StyledMainGameContainer = styled.div`
     }
 `
 
+const StyledPlayerDisplay = styled.div`
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1rem 0;
+`
+
 const gameStatus = {
   SETUP: 0,
   PLAYING: 1,
   ENDED: 2
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const App = () => {
   const [currentGameStatus, setCurrentGameStatus] = useState(gameStatus.SETUP)
   const [inputValue, setInputValue] = useState("")
   const [messageDisplayer, setMessageDisplayer] = useState("")
-  const [gameBoard, setGameBoard] = useState(null)
-  const [gameStatsData, setGameStatsData] = useState(null)
-  const [lineInput, setLineInput] = useState("")
-  const [columnInput, setColumnInput] = useState("")
-
-  const isValidNumberInput = (input) => {
-    if (parseInt(input) < 2 || parseInt(input) > 20) {
-      return false
-    }
-    return true
-  }
+  const [gameBoardP1, setGameBoardP1] = useState(null)
+  const [spacesRemainingP1, setSpacesRemainingP1] = useState(null)
+  const [gameBoardP2, setGameBoardP2] = useState(null)
+  const [spacesRemainingP2, setSpacesRemainingP2] = useState(null)
+  const [gameStatsDataP1, setGameStatsDataP1] = useState(null)
+  const [gameStatsDataP2, setGameStatsDataP2] = useState(null)
+  const [lineInput, setLineInput] = useState(0)
+  const [columnInput, setColumnInput] = useState(0)
+  const [players, setPlayers] = useState(1)
+  const [isP1Turn, setIsP1Turn] = useState(true)
 
   const isValidAttackInput = () => {
     if (inputValue.length !== 2) {
@@ -79,57 +88,83 @@ const App = () => {
     return true
   }
 
-  const handleAttack = () => {
+  const handleAttack = async () => {
     if (isValidAttackInput()) {
-      const data = shoot(inputValue)
-      setGameBoard(data[0])
+      let data
+      if (isP1Turn) {
+        data = shoot(inputValue, spacesRemainingP1, gameBoardP1, gameStatsDataP1)
+        setGameBoardP1(data.gameBoard)
+        setSpacesRemainingP1(data.spacesRemainning)
+        setGameStatsDataP1(data.gameStats)
+      } else {
+        data = shoot(inputValue, spacesRemainingP2, gameBoardP2, gameStatsDataP2)
+        setGameBoardP2(data.gameBoard)
+        setSpacesRemainingP2(data.spacesRemainning)
+        setGameStatsDataP2(data.gameStats)
+      }
       setInputValue("")
 
-      setMessageDisplayer(`${data[2] ? 'Alvo inimigo foi atingido' : 'O míssel caiu no mar'}`)
+      setMessageDisplayer(`${data.isHit ? 'Alvo inimigo foi atingido' : 'O míssel caiu no mar'}`)
 
-      if (!data[1]) {
+      if (!data.spacesRemainning) {
         setCurrentGameStatus(gameStatus.ENDED)
       }
-      setGameStatsData(gameStats())
+      if (players === 2) {
+        await sleep(3000)
+        setIsP1Turn(!isP1Turn)
+        setMessageDisplayer('')
+      }
     } else {
       setMessageDisplayer(`Entrada inválida. A posição deve estar no formato [letra (A-${String.fromCharCode(parseInt(lineInput) + 64)})][número(1 - ${columnInput})]`)
     }
   }
 
-  const handleGameStart = () => {
-    if (isValidNumberInput(lineInput) && isValidNumberInput(columnInput)) {
-      setCurrentGameStatus(gameStatus.PLAYING)
-      setGameBoard(startGame(parseInt(lineInput), parseInt(columnInput)))
-      setGameStatsData(gameStats())
-    } else {
-      setMessageDisplayer("Por favor, insira um valor entre 2 e 20 para linhas e colunas")
+  const handleGameStart = (lineAmount, columnAmount, playersAmount) => {
+    setCurrentGameStatus(gameStatus.PLAYING)
+    setPlayers(playersAmount)
+    setLineInput(lineAmount)
+    setColumnInput(columnAmount)
+    const initialInfoP1 = startGame(lineAmount, columnAmount)
+    setGameBoardP1(initialInfoP1.board)
+    setSpacesRemainingP1(initialInfoP1.spacesLeft)
+    setGameStatsDataP1(initialInfoP1.gameStats)
+    if (playersAmount === 2) {
+      const initialInfoP2 = startGame(lineAmount, columnAmount)
+      setGameBoardP2(initialInfoP2.board)
+      setSpacesRemainingP2(initialInfoP2.spacesLeft)
+      setGameStatsDataP2(initialInfoP2.gameStats)
     }
   }
 
   const handleRestart = () => {
     setCurrentGameStatus(gameStatus.SETUP)
-    setGameBoard(startGame(parseInt(lineInput), parseInt(columnInput)))
+    setGameBoardP1(startGame(parseInt(lineInput), parseInt(columnInput)))
   }
 
   return (
     <>
       {currentGameStatus === gameStatus.SETUP ?
-        <StartDialog handleStart={() => handleGameStart()} lineValue={lineInput} handleLineChange={(event) => setLineInput(event.target.value)} columnValue={columnInput} handleColumnChange={(event) => setColumnInput(event.target.value)} errorMessage={messageDisplayer} />
+        <StartDialog handleStart={(lineAmount, columnAmount, playersAmount) => handleGameStart(lineAmount, columnAmount, playersAmount)} />
         :
         currentGameStatus === gameStatus.ENDED ?
-          <RestartDialog handleRestart={() => handleRestart()} />
+          <RestartDialog handleRestart={() => handleRestart()} twoPlayers={players === 2 ? true : false} P1Wins={!isP1Turn} />
           :
           <>
             <StyledWrapper>
               <StyledH1>Batalha Naval</StyledH1>
               <StyledMainGameContainer>
-                {gameStatsData ? <StatsDisplay gameStats={gameStatsData} /> : <></>}
+                <StyledPlayerDisplay>Jogador {isP1Turn ? '1' : '2'}</StyledPlayerDisplay>
                 <StyledInputWrapper>
-                  <Input inputText="Posição a ser atacada:" value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
+                  <Input inputText="Escolha a posição a ser atacada:" value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
                   <Button onClick={() => handleAttack()} buttonText="Atacar" />
                 </StyledInputWrapper>
-                <Board gameBoard={gameBoard} gameBoardColumns={parseInt(columnInput)} />
                 <StyledSpan>{messageDisplayer}</StyledSpan>
+                {isP1Turn ?
+                  <Board gameBoard={gameBoardP1} gameBoardColumns={columnInput} />
+                  :
+                  <Board secondPlayer gameBoard={gameBoardP2} gameBoardColumns={columnInput} />
+                }
+                {gameStatsDataP1 && isP1Turn ? <StatsDisplay gameStats={gameStatsDataP1} /> : gameStatsDataP2 ? <StatsDisplay gameStats={gameStatsDataP2} /> : <></>}
               </StyledMainGameContainer>
             </StyledWrapper>
           </>
