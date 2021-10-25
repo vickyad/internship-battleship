@@ -1,14 +1,14 @@
 import React from "react"
 import styled from "styled-components"
 
-const StyledStatsDisplay = styled.div`
+const StatsDisplayWrapper = styled.div`
     background: #5D7E48;
     font-weight: 600;
     padding: 0.5rem 0;
     margin-top: 1.5rem;
 `
 
-const StyledHitNMisses = styled.div`
+const HitNMisses = styled.div`
     display: flex;
     justify-content: space-evenly;
     margin-top: 0.3rem;
@@ -16,13 +16,13 @@ const StyledHitNMisses = styled.div`
 
 const StatsDisplay = ({ gameStats }) => {
     return (
-        <StyledStatsDisplay>
+        <StatsDisplayWrapper>
             <span>Turno: {gameStats.turns}</span>
-            <StyledHitNMisses>
+            <HitNMisses>
                 <span>Mísseis acertados: {gameStats.hits}</span>
                 <span>Mísseis errados: {gameStats.misses}</span>
-            </StyledHitNMisses>
-        </StyledStatsDisplay>
+            </HitNMisses>
+        </StatsDisplayWrapper>
     )
 
 }

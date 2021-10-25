@@ -1,24 +1,24 @@
 import styled from "styled-components"
 
-const StyledInputWrapper = styled.div`
+const InputWrapper = styled.div`
     display: flex;
     align-items: center;
-`
 
-const StyledInput = styled.input`
-    margin-right: 0.5rem;
-`
+    input {
+        margin-right: 0.5rem;
+    }
 
-const SyledLabel = styled.label`
-    font-size: 1.1rem;
+    label {
+        font-size: 1.1rem;
+    }
 `
 
 const Checkbox = ({ labelText, isChecked, onChange }) => {
     return (
-        <StyledInputWrapper>
-            <StyledInput type="checkbox" defaultChecked={isChecked} onChange={onChange} />
-            <SyledLabel>{labelText}</SyledLabel>
-        </StyledInputWrapper>
+        <InputWrapper>
+            <input type="checkbox" defaultChecked={isChecked} onChange={onChange} />
+            <label>{labelText}</label>
+        </InputWrapper>
     )
 }
 export default Checkbox

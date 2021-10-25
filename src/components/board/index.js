@@ -1,53 +1,57 @@
 import React from "react"
 import styled from "styled-components"
 
-const StyledBoard = styled.div`
+const Board = styled.div`
     display: grid;
     margin: 0 auto;
     width: 90vmin;
+    grid-template-columns: repeat(${props => props.boardColumns}, 1fr)
 `
 
-const StyledIndex = styled.div`
+const BoardElement = styled.div`
     align-items: center;
     display: flex;
     font-weight: bold;
     justify-content: center;
-    height: 3rem;
     align-self: center;
+    height: 3rem;
 `
 
-const StyledItem = styled.div`
-    align-items: center;
+const BoardContent = styled(BoardElement)`
     background: ${props => props.secondPlayer ? '#232F1B' : '#121212'};
     border-width: 2px;
     border-style: outset;
     color: #94C973;
-    display: flex;
-    font-weight: bold;
-    justify-content: center;
-    height: calc(90vmin / ${props => props.gameBoardColumns});
-    width: calc(90vmin / ${props => props.gameBoardColumns});
+    height: calc(90vmin / ${props => props.boardColumns});
+    width: calc(90vmin / ${props => props.boardColumns});
 `
 
-const Board = ({ gameBoard, gameBoardColumns, secondPlayer }) => {
+const GameBoard = ({ gameBoard, gameBoardColumns, secondPlayer }) => {
 
     return (
-        <StyledBoard style={{ gridTemplateColumns: `repeat(${gameBoardColumns + 1}, 1fr)` }}>
+        <Board boardColumns={gameBoardColumns + 1}>
             <span></span>
-            {[...Array(gameBoardColumns).keys()].map((item, index) => <StyledIndex key={`header-index_${index}`}>{item + 1}</StyledIndex>)}
-            {gameBoard ?
-                gameBoard.map((array, arrayIndex) => {
-                    return (
-                        <>
-                            <StyledIndex>{String.fromCharCode(arrayIndex + 65)}</StyledIndex>
-                            {array.map(item => <StyledItem secondPlayer={secondPlayer} gameBoardColumns={gameBoardColumns + 1}>{item === 'S' ? ' ' : item}</StyledItem>)}
-                        </>
-                    )
-                })
-                :
-                <></>
-            }
-        </StyledBoard>
+            {[...Array(gameBoardColumns).keys()].map(
+                (item, index) => <BoardElement key={`header-index_${index}`}>{item + 1}</BoardElement>
+            )}
+            {gameBoard && gameBoard.map((array, arrayIndex) => {
+                return (
+                    <>
+                        <BoardElement>
+                            {String.fromCharCode(arrayIndex + 65)}
+                        </BoardElement>
+                        {array.map(item => {
+                            return <BoardContent
+                                secondPlayer={secondPlayer}
+                                boardColumns={gameBoardColumns + 1}
+                            >
+                                {item === 'S' ? ' ' : item}
+                            </BoardContent>
+                        })}
+                    </>
+                )
+            })}
+        </Board>
     )
 }
-export default Board
+export default GameBoard

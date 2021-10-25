@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import Board from "./components/Board"
+import GameBoard from "./components/Board"
 import Button from "./components/Button"
 import Input from "./components/Input"
 import RestartDialog from "./components/RestartDialog"
@@ -160,9 +160,9 @@ const App = () => {
                 </StyledInputWrapper>
                 <StyledSpan>{messageDisplayer}</StyledSpan>
                 {isP1Turn ?
-                  <Board gameBoard={gameBoardP1} gameBoardColumns={columnInput} />
+                  <GameBoard gameBoard={gameBoardP1} gameBoardColumns={columnInput} />
                   :
-                  <Board secondPlayer gameBoard={gameBoardP2} gameBoardColumns={columnInput} />
+                  <GameBoard secondPlayer gameBoard={gameBoardP2} gameBoardColumns={columnInput} />
                 }
                 {gameStatsDataP1 && isP1Turn ? <StatsDisplay gameStats={gameStatsDataP1} /> : gameStatsDataP2 ? <StatsDisplay gameStats={gameStatsDataP2} /> : <></>}
               </StyledMainGameContainer>

@@ -4,7 +4,7 @@ import Input from "../Input"
 import styled from "styled-components"
 import Checkbox from "../Checkbox"
 
-const StyledDiv = styled.div`
+const DialogWrapper = styled.div`
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -12,11 +12,11 @@ const StyledDiv = styled.div`
     justify-content: space-evenly;
     margin: 0 auto;
     width: 90vw;
-`
 
-const StyledSpan = styled.span`
-    color: #f5f5f5;
-    font-weight: 700;
+    .error-messages {
+        color: #f5f5f5;
+        font-weight: 700;
+    }
 `
 
 const StartDialog = ({ handleStart }) => {
@@ -26,6 +26,9 @@ const StartDialog = ({ handleStart }) => {
     const [errorMessage, setErrorMessage] = useState('')
 
     const isValidNumberInput = (input) => {
+        if (isNaN(input)) {
+            return false
+        }
         if (input < 2 || input > 20) {
             return false
         }
@@ -45,13 +48,13 @@ const StartDialog = ({ handleStart }) => {
     }
 
     return (
-        <StyledDiv>
+        <DialogWrapper>
             <Input inputText="Informe o número de linhas:" value={lineInput} onChange={event => setLineInput(event.target.value)} />
             <Input inputText="Informe o número de colunas:" value={columnInput} onChange={event => setColumnInput(event.target.value)} />
             <Checkbox labelText="2 jogadores" isChecked={isCheckboxChecked} onChange={() => setIsCheckboxChecked(!isCheckboxChecked)} />
-            <StyledSpan>{errorMessage}</StyledSpan>
+            <span className="error-messages">{errorMessage}</span>
             <Button onClick={() => handleButtonClick()} buttonText="Iniciar o jogo" />
-        </StyledDiv>
+        </DialogWrapper>
     )
 }
 export default StartDialog
